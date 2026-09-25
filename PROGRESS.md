@@ -5,12 +5,13 @@ changing moves out rather than piling up.
 
 ## Published
 
-Nothing on nuget.org yet: `2026.3.925` is being released, see Next. The GitHub repository has been
-public since 2026-09-25, with the family settings applied: `check --admin` conforms, and CI is
-green on every job of `1b6af59`. Trusted publishing is proven: on 2026-09-25 the credential
-preflight, run `36193373361`, logged in through the policy and stopped.
+| Version | Released | Verified from the feed |
+|---|---|---|
+| `2026.3.925` | 2026-09-25: tag `v2026.3.925` on `bed0f7c`, release run `36193678454`, after a credential preflight and green CI on that commit | The flat container lists it. The DLL nuget.org serves is byte-identical to the GitHub release asset's. A consumer restoring from nuget.org alone, on SDK `10.0.401`, gets `BNCQ1001`, `BNCQ1002` and `BNCQ1004`. Each rule's help link resolves to its README section on GitHub |
 
-## On `main`, not yet released
+The repository is public, with the family settings applied: `check --admin` conforms.
+
+What `2026.3.925` holds:
 
 | Change | Commit |
 |---|---|
@@ -20,6 +21,11 @@ preflight, run `36193373361`, logged in through the policy and stopped.
 | `BNCQ1001`: a defaulted cancellation token, or a token-less overload of a tokened sibling, on a visible method or constructor; off by default | `af80b7b` |
 | `BNCQ1002`: a leak-prone type in the visible surface, walked transitively through referenced types | `af80b7b` |
 | `BNCQ1002` also sees a covered namespace declared only in a reference behind an extern alias; before, the rule stayed inert there. The twin of the alias defect fixed in `BNCQ1004` | `c8ce144` |
+| The three rules recorded under `## Release 2026.3.925` in `AnalyzerReleases.Shipped.md` | `bed0f7c` |
+
+## On `main`, not yet released
+
+Nothing.
 
 ## Decisions
 
@@ -56,19 +62,13 @@ a test that failed first.
 
 ## Next
 
-1. **The first release, `2026.3.925`**, at the maintainer's go on 2026-09-25. The change that
-   records this moves the three rules into `AnalyzerReleases.Shipped.md` under
-   `## Release 2026.3.925`, and `v2026.3.925` is tagged on it. Verify against the feed, not the
-   workflow, then move the table above under Published. `NUGET_USER` is `JanusMael`, and the policy
-   covers `Bennewitz.Ninja.CodeQuality` through `release.yml`:
-   [docs/publishing.md](docs/publishing.md).
-2. After the release, **AssemblyQuality links back**: its README's `BNAQ1001`, `BNAQ1002` and
-   `BNAQ1004` gain links to this README's sections. A message to the AssemblyQuality session, or an
-   issue in `JanusMael/Bennewitz.Ninja.AssemblyQuality` when none is running.
-3. After the release, **upstream the analyzer shape** to Bennewitz.Ninja.Templates as a third
-   template: the diff from the scaffold commit to the release tag is the measured difference from
-   `bbpkg`. A message to the Templates session, or an issue in `JanusMael/Bennewitz.Ninja.Templates`.
-   What it holds, for that message:
+1. **AssemblyQuality links back**: its README's `BNAQ1001`, `BNAQ1002` and `BNAQ1004` gain links to
+   this README's sections, which now resolve. A message to the AssemblyQuality session, or an issue
+   in `JanusMael/Bennewitz.Ninja.AssemblyQuality` when none is running.
+2. **Upstream the analyzer shape** to Bennewitz.Ninja.Templates as a third template: the diff from
+   `e457b5d`, the scaffold, to `v2026.3.925` is the measured difference from `bbpkg`. A message to
+   the Templates session, or an issue in `JanusMael/Bennewitz.Ninja.Templates`. What it holds, for
+   that message:
    - `CodeQuality.csproj`: `netstandard2.0`, `IsRoslynComponent`, `EnforceExtendedAnalyzerRules`,
      `IncludeBuildOutput` off and the DLL packed under `analyzers/dotnet/cs`, `DevelopmentDependency`,
      `SuppressDependenciesWhenPacking` (`NU5128`), trimming off (`NETSDK1212`), the release-tracking
@@ -86,6 +86,6 @@ a test that failed first.
    - A defect in `bbpkg` itself, whatever the third template becomes: its `src/Directory.Build.props`
      says `PackageMetadataTests` reads the trimmable mark, and no such test exists; the template's
      test is `TrimmableTests`.
-4. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
+3. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
    receiver of an `extension(...)` block, because Roslyn 4.14 has no API for it. The README and the
    analyzer's remarks say so.
