@@ -5,7 +5,8 @@ changing moves out rather than piling up.
 
 ## Published
 
-Nothing yet. The GitHub repository does not exist yet either; see Next.
+Nothing on nuget.org yet. The GitHub repository has been public since 2026-09-25, with the family
+settings applied: `check --admin` conforms, and CI is green on every job of `1b6af59`.
 
 ## On `main`, not yet released
 
@@ -52,10 +53,10 @@ each fixed with a test that failed first.
 
 ## Next
 
-1. **The GitHub repository**, on the maintainer's go: create `JanusMael/Bennewitz.Ninja.CodeQuality`,
-   push `main`, then `repo-conventions apply` and `check --admin` with the maintainer's `gh` login.
-   Then the `NUGET_USER` variable and the one trusted-publishing policy, which is account-level:
-   [docs/publishing.md](docs/publishing.md).
+1. **Trusted publishing**, the maintainer's to set up because it is account-level: the `NUGET_USER`
+   repository variable and the one nuget.org policy, then **Release**, *Run workflow*, with the
+   version blank, which proves the credentials without publishing.
+   [docs/publishing.md](docs/publishing.md) is the runbook.
 2. **The first release**, only on the maintainer's explicit go. In the same change as the tag, move
    the three rules from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md` under
    `## Release <version>`. Verify against the feed, not the workflow.
