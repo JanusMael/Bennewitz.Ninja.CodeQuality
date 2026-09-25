@@ -1,13 +1,61 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <!-- A Roslyn analyzer targets netstandard2.0 and nothing else. The compiler loads it inside
+         Visual Studio's .NET Framework MSBuild as well as inside the dotnet CLI, and netstandard2.0
+         is the one target both hosts can load; the family conventions require it for the analyzer
+         role, which IsRoslynComponent declares. The root Directory.Build.props says net10.0 for the
+         family, and this overrides it deliberately. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
     <IsPackable>true</IsPackable>
     <!-- The id below is derived from the stem passed to `dotnet new bbpkg -n <Stem>`; the assembly
          name stays the bare stem, which is the convention across these repos. -->
     <PackageId>Bennewitz.Ninja.CodeQuality</PackageId>
     <AssemblyName>CodeQuality</AssemblyName>
-    <Description>TODO: what this package does, in the words a consumer would search for.</Description>
-    <PackageTags>TODO</PackageTags>
+    <Description>Roslyn analyzers for the shape of a .NET library's source: namespace segments that shadow a referenced root namespace, implementation types leaking into the public surface, and cancellation tokens a caller can leave out. The source-side companion to Bennewitz.Ninja.AssemblyQuality.</Description>
+    <PackageTags>analyzers roslyn code-quality static-analysis api-design</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- ⛔ The DLL ships under analyzers/dotnet/cs and never under lib/. Under lib/ a consumer would
+         get a runtime reference to the analyzer, and the compiler would never load it as one. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- A build-time dependency: it is not passed on to whoever references the consumer. -->
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <!-- ⛔ The package declares no dependencies. Every reference here is build-only, so NuGet would
+         write an empty netstandard2.0 dependency group with no lib/ folder beside it, and fail the
+         pack with NU5128. An analyzer cannot use a package dependency at run time anyway: the
+         compiler loads only what sits beside it under analyzers/. AnalyzerShapeTests fails if the
+         compiled assembly references anything the compiler host does not provide. -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+
+    <!-- Trimming is a library's concern, not an analyzer's. The compiler loads this assembly; no
+         consumer ever publishes it trimmed, and the SDK does not support the trim analyser on
+         netstandard2.0: it warns NETSDK1212, which CI's -warnaserror build makes an error. src/Directory.Build.props
+         sets both for every library under src/, so an analyzer opts out here, with this reason, the
+         way repository.json exempts a project from a family rule. AnalyzerShapeTests reads the
+         result off the compiled assembly. -->
+    <IsTrimmable>false</IsTrimmable>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The one file the package ships, at the path the compiler looks in. -->
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <!-- Release tracking (RS2007/RS2008): every rule is recorded, from the first release on. -->
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+    <!-- The analyzers and their base are internal, so the tests need this to instantiate them. -->
+    <InternalsVisibleTo Include="CodeQuality.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ⛔ Both PrivateAssets="all": an analyzer takes no package dependency at run time. The compiler
+         host supplies Microsoft.CodeAnalysis, and any other DLL an analyzer needed would have to be
+         packed beside it or fail to load as AD0001. The CSharp pin is the oldest compiler a consumer
+         can use; Directory.Packages.props says which and why. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+  </ItemGroup>
 </Project>

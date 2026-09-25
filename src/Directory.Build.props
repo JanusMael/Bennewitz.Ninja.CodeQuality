@@ -8,7 +8,9 @@
 
   <PropertyGroup>
     <!--
-      Every shipped assembly declares itself trimmable.
+      Every shipped library declares itself trimmable. An analyzer does not: its csproj opts out,
+      because the SDK warns NETSDK1212 for both properties on netstandard2.0 and no consumer ever
+      publishes an analyzer trimmed.
 
       ⛔ This travels INSIDE the package. IsTrimmable is compiled into the assembly as
       [AssemblyMetadata("IsTrimmable", "True")], and an app publishing with TrimMode=partial trims
@@ -21,7 +23,7 @@
       a file-by-file move never read, and the bbpkg template they were generated from did not set
       it at all. It does now, which is why every repository generated since has this file. The code itself
       measured clean both times; only the declaration was missing, which is exactly the kind of
-      loss that no build and no test notices on its own. PackageMetadataTests now reads the mark
+      loss that no build and no test notices on its own. AnalyzerShapeTests now reads the mark
       off the COMPILED assembly so it cannot go missing quietly again.
     -->
     <IsTrimmable>true</IsTrimmable>

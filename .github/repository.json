@@ -1,7 +1,7 @@
 {
-  "description": "",
+  "description": "Roslyn analyzers for the shape of a .NET library's source: namespace segments that shadow a referenced root, implementation types leaking into the public surface, and cancellation tokens a caller can leave out. Ships as Bennewitz.Ninja.CodeQuality.",
   "homepage": "",
-  "topics": ["csharp", "dotnet", "nuget"],
+  "topics": ["csharp", "dotnet", "nuget", "roslyn", "roslyn-analyzer", "static-analysis"],
   "requiredChecks": ["build", "pack", "conventions"],
   "content": [],
   "undocumented": {},

@@ -2,5 +2,12 @@
   <!-- Framework packages, IsTestProject and OutputType all come from tests/Directory.Build.props. -->
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeQuality\CodeQuality.csproj" />
+    <!-- Compiles test sources in memory and runs an analyzer over them, with {|BNCQ1004:span|}
+         markup for the expected diagnostics. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+    <!-- ⚠ Named here so the tests run on the analyzer's own Roslyn pin from Directory.Packages.props,
+         which is the oldest compiler the package claims to support. The testing package itself
+         floors Workspaces at 1.0.1 and leaves the version to the test project. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
   </ItemGroup>
 </Project>
