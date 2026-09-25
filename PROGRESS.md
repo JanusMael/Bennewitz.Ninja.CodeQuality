@@ -11,11 +11,11 @@ Nothing yet. The GitHub repository does not exist yet either; see Next.
 
 | Change | Commit |
 |---|---|
-| The repository, generated with `dotnet new bbpkg -n CodeQuality --RepoOwner JanusMael` from Bennewitz.Ninja.Templates `2026.3.925` | |
-| The scaffold becomes an analyzer: `netstandard2.0`, `IsRoslynComponent`, the DLL packed under `analyzers/dotnet/cs` with no `lib/` and no dependencies, a development dependency, trimming opted out with the reason; `ScopedAnalyzer<TScope>` and `AnalyzerConventionTests`; `AnalyzerShapeTests` in place of `TrimmableTests`; the tests run on the Roslyn pin; release tracking from the first release; `Directory.Build.targets` takes `PublicVersion` from the template's `main` (Templates `e6b7930`, after `2026.3.925`) | |
-| `BNCQ1004`: a namespace segment that shadows a referenced root namespace | |
-| `BNCQ1001`: a defaulted cancellation token, or a token-less overload of a tokened sibling, on a visible method or constructor; off by default | |
-| `BNCQ1002`: a leak-prone type in the visible surface, walked transitively through referenced types | |
+| The repository, generated with `dotnet new bbpkg -n CodeQuality --RepoOwner JanusMael` from Bennewitz.Ninja.Templates `2026.3.925` | `e457b5d` |
+| The scaffold becomes an analyzer: `netstandard2.0`, `IsRoslynComponent`, the DLL packed under `analyzers/dotnet/cs` with no `lib/` and no dependencies, a development dependency, trimming opted out with the reason; `ScopedAnalyzer<TScope>` and `AnalyzerConventionTests`; `AnalyzerShapeTests` in place of `TrimmableTests`; the tests run on the Roslyn pin; release tracking from the first release; `Directory.Build.targets` takes `PublicVersion` from the template's `main` (Templates `e6b7930`, after `2026.3.925`) | `af80b7b` |
+| `BNCQ1004`: a namespace segment that shadows a referenced root namespace | `af80b7b` |
+| `BNCQ1001`: a defaulted cancellation token, or a token-less overload of a tokened sibling, on a visible method or constructor; off by default | `af80b7b` |
+| `BNCQ1002`: a leak-prone type in the visible surface, walked transitively through referenced types | `af80b7b` |
 
 ## Decisions
 
