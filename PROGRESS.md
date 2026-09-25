@@ -25,7 +25,9 @@ What `2026.3.925` holds:
 
 ## On `main`, not yet released
 
-Nothing.
+| Change | Commit |
+|---|---|
+| README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | |
 
 ## Decisions
 
@@ -62,19 +64,17 @@ a test that failed first.
 
 ## Waiting on others
 
-Sent on 2026-09-25, at the maintainer's word, to the session that owns each repository. The change
-is theirs to make; nothing here waits on it.
+Sent on 2026-09-25, at the maintainer's word, to the session that owns the repository. The change
+is theirs to make; nothing here waits on it. The AssemblyQuality link-back, sent the same way, is
+done: its `2c40de6` gives each rule a README section that links its counterpart, and a test there
+fails if a rule loses its heading.
 
 | Sent to | What |
 |---|---|
-| The AssemblyQuality session | Link `BNAQ1001`, `BNAQ1002` and `BNAQ1004` to this README's sections, which resolve. Its rules table is generated, so the links go into the generator or after the table. Also: `BNCQ1004` catches the `Orphan.Absent` shadow that `BNAQ1004` is documented as unable to see. Under way the same day: its README, not yet committed, gives each rule a `### BNAQ100x` section that links its counterpart |
 | The Templates session | The measured differences from `bbpkg` for a third template: the diff `e457b5d..v2026.3.925`, with what each change is for. Also: `bbpkg`'s `src/Directory.Build.props` names a `PackageMetadataTests` that does not exist; and `verify-release` uninstalls the developer's `Bennewitz.Ninja.Templates` registration. Acknowledged the same day: that session's own scripts had wiped the registration on this machine; `verify-release` moves to a custom hive and the comment is fixed under its `plans/00005` step 5, pull request #8; the analyzer template is a candidate for a later plan |
 
 ## Next
 
-1. **Precise counterpart links**, once AssemblyQuality's per-rule sections reach its `main`: this
-   README links each rule to AssemblyQuality's `#rules`, and can link `#bnaq1001`, `#bnaq1002` and
-   `#bnaq1004` instead. The nuget.org README changes only with the next release.
-2. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
+1. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
    receiver of an `extension(...)` block, because Roslyn 4.14 has no API for it. The README and the
    analyzer's remarks say so.

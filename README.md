@@ -30,8 +30,9 @@ where warnings are errors.
 <!-- END GENERATED RULES -->
 
 The table is rendered from the analyzers' own descriptors, and a test fails if it drifts.
-`BNCQ1003` is reserved: its counterpart `BNAQ1003` forbids a reference, and a forbidden use site at
-compile time is already
+`BNCQ1003` is reserved: its counterpart
+[`BNAQ1003`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#bnaq1003) forbids a
+reference, and a forbidden use site at compile time is already
 [Microsoft.CodeAnalysis.BannedApiAnalyzers](https://www.nuget.org/packages/Microsoft.CodeAnalysis.BannedApiAnalyzers)'
 job.
 
@@ -47,7 +48,7 @@ which is why each rule's tests show it firing on a real violation as well as sta
 ### BNCQ1001
 
 **A visible method lets the caller leave the cancellation token out.** Off by default. Counterpart:
-[`BNAQ1001`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#rules).
+[`BNAQ1001`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#bnaq1001).
 
 A `CancellationToken` parameter with a default value hands every caller who forgets it
 `CancellationToken.None`: an operation that cannot be cancelled, chosen by nobody, visible nowhere.
@@ -76,7 +77,7 @@ a compilation that cannot name `CancellationToken`.
 ### BNCQ1002
 
 **A type from a leak-prone namespace appears in the visible surface.** Counterpart:
-[`BNAQ1002`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#rules).
+[`BNAQ1002`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#bnaq1002).
 
 Return a `JsonNode` from one public method and every consumer now binds against
 `System.Text.Json`, its version, its behaviour and its breaking changes, whether or not they
@@ -117,7 +118,7 @@ does not mean to expose, or empty it.
 ### BNCQ1004
 
 **A namespace segment shadows the root namespace of a referenced assembly.** Counterpart:
-[`BNAQ1004`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#rules).
+[`BNAQ1004`](https://github.com/JanusMael/Bennewitz.Ninja.AssemblyQuality#bnaq1004).
 
 C# resolves the first identifier of a qualified name by walking outward from the current
 namespace. Inside `Acme.Widgets.Avalonia`, the name `Avalonia` finds your namespace first, and
