@@ -60,32 +60,18 @@ a test that failed first.
 | A consumer of the packed package | SDK `10.0.401` and `9.0.318`: all three rules fire. SDK `8.0.425`: `CS9057`, the analyzer is skipped, and the build succeeds |
 | Seven family repositories, copied, with the analyzer injected into every project and `BNCQ1001` enabled | AssemblyQuality: 8 findings, all in its own `BNAQ` fixtures; `Orphaned.cs` is a shadow its reflection rule is documented as unable to see. DiffView: 2 `BNCQ1001`, `DiffDocumentBuilder.Build` and `DiffSearch.Find`. JsonC: 2 `BNCQ1002`, `JsonNode` in a JSON editor's API by design. XamlQuality, AppServices, ScopedEditors and FileServer: none, with the analyzer confirmed in every project. No `AD0001` anywhere. DiffView's build stopped at a test project's step that clones reference sources, on a path too long for the copy, after all five of its projects had compiled; GeoHash was not built, because it needs a package that is not on nuget.org |
 
+## Waiting on others
+
+Sent on 2026-09-25, at the maintainer's word, to the session that owns each repository. The change
+is theirs to make; nothing here waits on it.
+
+| Sent to | What |
+|---|---|
+| The AssemblyQuality session | Link `BNAQ1001`, `BNAQ1002` and `BNAQ1004` to this README's sections, which resolve. Its rules table is generated, so the links go into the generator or after the table. Also: `BNCQ1004` catches the `Orphan.Absent` shadow that `BNAQ1004` is documented as unable to see |
+| The Templates session | The measured differences from `bbpkg` for a third template: the diff `e457b5d..v2026.3.925`, with what each change is for. Also: `bbpkg`'s `src/Directory.Build.props` names a `PackageMetadataTests` that does not exist; and `verify-release` uninstalls the developer's `Bennewitz.Ninja.Templates` registration, the likely reason it vanished from this machine at 13:49 that day |
+
 ## Next
 
-1. **AssemblyQuality links back**: its README's `BNAQ1001`, `BNAQ1002` and `BNAQ1004` gain links to
-   this README's sections, which now resolve. A message to the AssemblyQuality session, or an issue
-   in `JanusMael/Bennewitz.Ninja.AssemblyQuality` when none is running.
-2. **Upstream the analyzer shape** to Bennewitz.Ninja.Templates as a third template: the diff from
-   `e457b5d`, the scaffold, to `v2026.3.925` is the measured difference from `bbpkg`. A message to
-   the Templates session, or an issue in `JanusMael/Bennewitz.Ninja.Templates`. What it holds, for
-   that message:
-   - `CodeQuality.csproj`: `netstandard2.0`, `IsRoslynComponent`, `EnforceExtendedAnalyzerRules`,
-     `IncludeBuildOutput` off and the DLL packed under `analyzers/dotnet/cs`, `DevelopmentDependency`,
-     `SuppressDependenciesWhenPacking` (`NU5128`), trimming off (`NETSDK1212`), the release-tracking
-     files, `InternalsVisibleTo` the tests.
-   - `Directory.Packages.props`: a `RoslynVersion` property for `Microsoft.CodeAnalysis.CSharp` and
-     `Microsoft.CodeAnalysis.CSharp.Workspaces` (`NU1701` without the second), plus
-     `Microsoft.CodeAnalysis.Analyzers` and `Microsoft.CodeAnalysis.CSharp.Analyzer.Testing`.
-   - `TrimmableTests` becomes the role-aware `AnalyzerShapeTests`, which also reads the packing
-     declarations; `AnalyzerConventionTests` and `RulesCatalogTests` are new. So are the rule-test
-     helpers: `Plain`, which proves inertness by counting registered actions, since a silent test
-     passes against a gate that never closes, and `Images`, for rules that read an assembly's
-     references.
-   - AutoVersioning generates a public `DirectoryBuildInfo` into the analyzer assembly, so the
-     no-public-type test excludes its namespace.
-   - A defect in `bbpkg` itself, whatever the third template becomes: its `src/Directory.Build.props`
-     says `PackageMetadataTests` reads the trimmable mark, and no such test exists; the template's
-     test is `TrimmableTests`.
-3. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
+1. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
    receiver of an `extension(...)` block, because Roslyn 4.14 has no API for it. The README and the
    analyzer's remarks say so.
