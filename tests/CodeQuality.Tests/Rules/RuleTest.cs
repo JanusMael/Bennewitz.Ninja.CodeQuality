@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
@@ -32,6 +33,29 @@ internal sealed class RuleTest<TAnalyzer> : CSharpAnalyzerTest<TAnalyzer, Defaul
 
     /// <summary>Runs the analyzer over <paramref name="source"/> and checks its markup.</summary>
     public static Task Run(string source) => new RuleTest<TAnalyzer>(source).Run();
+
+    /// <summary>
+    /// Runs the analyzer over <paramref name="source"/> parsed as the preview language version.
+    /// </summary>
+    public static Task RunPreview(string source) => new RuleTest<TAnalyzer>(source).InPreview().Run();
+
+    /// <summary>
+    /// Parses this test's sources as the preview language version.
+    /// </summary>
+    /// <remarks>
+    /// ⚠ <b>How the Roslyn 4.14 pin parses C# 14 extension blocks.</b> Measured: under the latest
+    /// language version 4.14 rejects them with CS1513, and under preview it builds the same extension
+    /// type the released compiler does. The suite also runs against Roslyn 5.9, where preview
+    /// includes C# 14 as released.
+    /// </remarks>
+    public RuleTest<TAnalyzer> InPreview()
+    {
+        SolutionTransforms.Add((solution, projectId) =>
+            solution.WithProjectParseOptions(
+                projectId,
+                ((CSharpParseOptions)solution.GetProject(projectId)!.ParseOptions!).WithLanguageVersion(LanguageVersion.Preview)));
+        return this;
+    }
 
     /// <summary>Runs this test under the test framework's cancellation.</summary>
     public Task Run() => RunAsync(TestContext.Current.CancellationToken);

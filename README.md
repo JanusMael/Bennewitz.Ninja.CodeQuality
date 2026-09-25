@@ -95,9 +95,10 @@ declared. A referenced type is opened only if its assembly can reach a covered n
 or through its own references, which keeps the walk off `Task<T>`, `List<T>` and most of the
 framework.
 
-The receiver of a C# 14 `extension(...)` block is not read yet: the analyzer is built against
-Roslyn 4.14, which predates that syntax. The members inside the block are checked as usual, and a
-classic `this JsonNode` extension method is reported.
+A C# 14 `extension(...)` block exposes its receiver: calling `node.Touch()` binds the consumer to
+`JsonNode` as surely as a classic `this JsonNode` parameter does. So a covered receiver, or a
+covered constraint on a generic block, is reported at the block, and the members inside are checked
+like any other.
 
 The default namespaces are the ones that leak in practice: `System.Text.Json.Nodes` and
 `Newtonsoft.Json.Linq`. The type most likely to leak from your library is one no general list

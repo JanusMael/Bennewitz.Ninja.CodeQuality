@@ -387,6 +387,78 @@ public sealed class SurfaceLeakTests
     }
 
     /// <summary>
+    /// A C# 14 extension block's receiver is part of what every member in the block exposes: calling
+    /// <c>node.Touch()</c> binds the consumer to <c>JsonNode</c>. Reported once, at the block.
+    /// </summary>
+    [Fact]
+    public Task An_extension_block_whose_receiver_is_covered_fires_at_the_block() =>
+        RuleTest<SurfaceLeakAnalyzer>.RunPreview("""
+            using System.Text.Json.Nodes;
+
+            public static class JsonExtensions
+            {
+                {|BNCQ1002:extension|}(JsonNode node)
+                {
+                    public int Depth => 0;
+                    public void Touch() { }
+                }
+            }
+            """);
+
+    /// <summary>
+    /// A generic block names its covered type in the constraint on its own type parameter, which the
+    /// block exposes as surely as a receiver.
+    /// </summary>
+    [Fact]
+    public Task A_generic_extension_block_constrained_to_a_covered_type_fires_at_the_block() =>
+        RuleTest<SurfaceLeakAnalyzer>.RunPreview("""
+            public static class JsonExtensions
+            {
+                {|BNCQ1002:extension|}<T>(T node) where T : System.Text.Json.Nodes.JsonNode
+                {
+                    public bool IsEmpty => false;
+                }
+            }
+            """);
+
+    /// <summary>
+    /// Inside a block, a member is checked like any other member, and the static method the
+    /// compiler adds to the enclosing class for it is not reported a second time.
+    /// </summary>
+    [Fact]
+    public Task A_member_of_an_extension_block_is_checked_like_any_member() =>
+        RuleTest<SurfaceLeakAnalyzer>.RunPreview("""
+            public static class TextExtensions
+            {
+                extension(string text)
+                {
+                    public System.Text.Json.Nodes.JsonNode {|BNCQ1002:Parse|}() => null;
+                    public int Words => 0;
+                }
+            }
+            """);
+
+    [Fact]
+    public Task Extension_blocks_on_uncovered_receivers_or_outside_the_surface_stay_silent() =>
+        RuleTest<SurfaceLeakAnalyzer>.RunPreview("""
+            public static class TextExtensions
+            {
+                extension(string text)
+                {
+                    public int Words => 0;
+                }
+            }
+
+            internal static class JsonExtensions
+            {
+                extension(System.Text.Json.Nodes.JsonNode node)
+                {
+                    public int Depth => 0;
+                }
+            }
+            """);
+
+    /// <summary>
     /// This compilation's own types are not opened: the member that leaks reports itself, once.
     /// </summary>
     [Fact]

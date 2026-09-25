@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -34,10 +35,12 @@ namespace Bennewitz.Ninja.CodeQuality.Rules;
 /// plainest explanation, even when the envelope comes first and reaches one too.
 /// </para>
 /// <para>
-/// ⚠ <b>The receiver of a C# 14 <c>extension(...)</c> block is not read.</b> The analyzer is
-/// compiled against Roslyn 4.14, which has no API for it; the members inside the block are
-/// examined as usual, and a classic <c>this JsonNode</c> extension method is reported. Measured by
-/// review on SDK 10.0.401.
+/// ⭐ <b>A C# 14 <c>extension(...)</c> block exposes its receiver.</b> Calling <c>node.Touch()</c>
+/// binds the consumer to <c>JsonNode</c> as surely as a classic <c>this JsonNode</c> parameter
+/// does, so the receiver is part of the block's own surface and is reported at the block. The
+/// members inside are examined like any other; the static methods the compiler adds to the
+/// enclosing class for them are implicitly declared and are not reported again. A first version
+/// did not read receivers, on the mistaken belief that Roslyn 4.14 had no API for them.
 /// </para>
 /// <para>
 /// ⛔ <b>The walk opens generic DEFINITIONS, breadth first, without recursion.</b> Measured: a first
@@ -166,8 +169,9 @@ internal sealed class SurfaceLeakAnalyzer : ScopedAnalyzer<SurfaceLeakAnalyzer.S
             return;
         }
 
-        // The type's own surface: what it derives from and implements, and its constraints.
-        if (scope.FindIn([.. Inherited(type), .. Constraints(type.TypeParameters)], context.CancellationToken) is { } own)
+        // The type's own surface: what it derives from and implements, its constraints, and, for a
+        // C# 14 extension block, its receiver.
+        if (scope.FindIn([.. Inherited(type), .. Constraints(type.TypeParameters), .. ExtensionBlock.Receiver(type)], context.CancellationToken) is { } own)
         {
             Report(context, type, type, own);
         }
@@ -205,6 +209,58 @@ internal sealed class SurfaceLeakAnalyzer : ScopedAnalyzer<SurfaceLeakAnalyzer.S
         {
             yield return implemented;
         }
+    }
+
+    /// <summary>
+    /// The receiver of a C# 14 extension block: the type every member in the block extends, and so
+    /// part of what each of them exposes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ⭐ <b>Read through the members Roslyn 4.14 declares on <see cref="ITypeSymbol"/>; no newer pin
+    /// is needed.</b> Measured: 4.14 declares <c>IsExtension</c> and <c>ExtensionParameter</c> there,
+    /// 5.9 keeps them beside its own pair on <see cref="INamedTypeSymbol"/>, and an analyzer built
+    /// against 4.14 read the receiver of <c>extension(JsonNode node)</c> correctly inside the .NET 10
+    /// compiler.
+    /// </para>
+    /// <para>
+    /// ⛔ <b>A compiler without those members degrades; it does not crash.</b> The read is a method of
+    /// its own that is never inlined, so a compiler that dropped them fails when that method is
+    /// compiled, inside the try below. The rule then stops reading receivers for the rest of the
+    /// process, as it did before, instead of every type raising <c>AD0001</c>.
+    /// </para>
+    /// </remarks>
+    private static class ExtensionBlock
+    {
+        private static int s_unreadable;
+
+        public static IEnumerable<ITypeSymbol> Receiver(INamedTypeSymbol type)
+        {
+            if (Volatile.Read(ref s_unreadable) != 0)
+            {
+                yield break;
+            }
+
+            ITypeSymbol? receiver;
+            try
+            {
+                receiver = Read(type);
+            }
+            catch (MissingMemberException)
+            {
+                Volatile.Write(ref s_unreadable, 1);
+                yield break;
+            }
+
+            if (receiver is not null)
+            {
+                yield return receiver;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static ITypeSymbol? Read(ITypeSymbol type) =>
+            type.IsExtension ? type.ExtensionParameter?.Type : null;
     }
 
     /// <summary>

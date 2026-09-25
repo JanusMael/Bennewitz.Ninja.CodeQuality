@@ -11,12 +11,13 @@
   <PropertyGroup Label="Roslyn">
     <!-- ⚠ The oldest compiler a consumer can use: an analyzer compiled against Roslyn X loads in
          every compiler X or later and in none before it. 4.14.0 matches Bennewitz.Ninja.AutoVersioning,
-         the family's other analyzer, by the maintainer's choice on 2026-09-25. It is not what the
-         rules need: measured, they build and pass on 4.0.1, and 3.11 cannot compile them, because
-         file-scoped namespaces arrived in Roslyn 4.0. So the pin can move down to 4.0.1 without a
-         code change, and it moves up only for an API the rules cannot do without. The tests resolve
-         the same version through Microsoft.CodeAnalysis.CSharp.Workspaces, so the rules are proved
-         on the oldest compiler the package claims to support. -->
+         the family's other analyzer, by the maintainer's choice on 2026-09-25, and it is also the
+         oldest the rules can use: BNCQ1002 reads a C# 14 extension block's receiver through
+         ITypeSymbol.IsExtension and ExtensionParameter, which first appear in 4.14. Measured: 4.13
+         cannot compile them (CS1061). It moves up only for an API the rules cannot do without. The
+         tests resolve the same version through Microsoft.CodeAnalysis.CSharp.Workspaces, so the
+         rules are proved on the oldest compiler the package claims to support; the suite also
+         passes against 5.9. -->
     <RoslynVersion>4.14.0</RoslynVersion>
   </PropertyGroup>
 

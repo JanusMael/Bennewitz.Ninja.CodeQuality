@@ -28,6 +28,7 @@ What `2026.3.925` holds:
 | Change | Commit |
 |---|---|
 | README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | `95ae6ee` |
+| `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | |
 
 ## Decisions
 
@@ -44,7 +45,8 @@ Settled with the maintainer on 2026-09-25, first recorded in Bennewitz.Ninja.Ass
 | Rule IDs | Prefix `BNCQ`: `BN` plus the product's initials, the family scheme. Once one ID ships, the prefix never changes. Each rule's README section links its `BNAQ` counterpart, and AssemblyQuality's README links back | One flat namespace of IDs across every analyzer a project loads |
 | Rule numbers | **Mirror `BNAQ`**: `BNCQ1004` is `BNAQ1004`'s counterpart. `BNCQ1003` is reserved. Decided by the maintainer in this repository's first session | A consumer who knows one rule knows the other |
 | Where a rule comes from | `helpLinkUri` (its README section), `Category` `Bennewitz.Ninja.CodeQuality`, and the package id, not a longer ID | |
-| Roslyn pin | **`4.14.0`**, matching AutoVersioning. Decided by the maintainer in this repository's first session | Measured: the rules build and pass on `4.0.1`, `4.4.0`, `4.8.0` and `4.14.0`; `3.11.0` cannot compile them (`SyntaxKind.FileScopedNamespaceDeclaration` is Roslyn 4.0). A consumer needs Visual Studio 2022 17.14 or a .NET 9.0.3xx SDK. Measured on SDK `8.0.425` (Roslyn 4.11): `CS9057`, the analyzer is skipped, and the build succeeds |
+| Roslyn pin | **`4.14.0`**, matching AutoVersioning. Decided by the maintainer in this repository's first session | Since `BNCQ1002` reads extension-block receivers, 4.14 is also the oldest the rules can use: the members it reads first appear there, and `4.13.0` cannot compile them. Before that change they built and passed on `4.0.1`, `4.4.0`, `4.8.0` and `4.14.0`, and `3.11.0` could not compile them. The suite also passes against `5.9.0`. A consumer needs Visual Studio 2022 17.14 or a .NET 9.0.3xx SDK. Measured on SDK `8.0.425` (Roslyn 4.11): `CS9057`, the analyzer is skipped, and the build succeeds |
+| Extension blocks in one build | Read through the members Roslyn 4.14 declares on `ITypeSymbol`, not a second build for Roslyn 5. Decided by the maintainer on 2026-09-25 | Measured: those members survive in 5.9 beside the new `INamedTypeSymbol` pair, and the shipped 4.14 build reads receivers correctly inside the .NET 10 compiler. Dual `roslynX.Y` folders, measured working with CommunityToolkit.Mvvm on SDKs 9 and 10, are for an API the pin lacks entirely |
 | Trimming | The analyzer's csproj sets `IsTrimmable` and `EnableTrimAnalyzer` false | The SDK warns `NETSDK1212` for both on `netstandard2.0`, and CI builds with `-warnaserror`; `repo-conventions` holds only libraries to trimming |
 | Tests on the pin | The tests reference `Microsoft.CodeAnalysis.CSharp.Workspaces` at `RoslynVersion` | The testing package floors it at `1.0.1`; without the pin the restore fails with `NU1701` |
 | No package dependencies | `SuppressDependenciesWhenPacking` | Every reference is build-only, so pack wrote an empty dependency group and failed with `NU5128`; an analyzer cannot load a package dependency anyway |
@@ -75,6 +77,7 @@ fails if a rule loses its heading.
 
 ## Next
 
-1. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
-   receiver of an `extension(...)` block, because Roslyn 4.14 has no API for it. The README and the
-   analyzer's remarks say so.
+1. **The next release**, `2026.3.926` at the earliest, carrying the table above. The maintainer
+   approved shipping it on 2026-09-25; only the version rule holds it, since one version per day
+   and `2026.3.925` is taken. The same steps as the first: move nothing in the release-tracking
+   files, because no rule is new; CI green on the commit; tag; verify from the feed.

@@ -18,7 +18,7 @@ public sealed class CancellationTokenTests
         dotnet_diagnostic.BNCQ1001.severity = warning
         """;
 
-    private static Task Run(string source, bool enabled = true)
+    private static Task Run(string source, bool enabled = true, bool preview = false)
     {
         RuleTest<CancellationTokenAnalyzer> test = new(source);
         if (enabled)
@@ -26,8 +26,27 @@ public sealed class CancellationTokenTests
             test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", Enabled));
         }
 
-        return test.Run();
+        return preview ? test.InPreview().Run() : test.Run();
     }
+
+    /// <summary>
+    /// A method inside a C# 14 extension block is checked where it is written, once: the static
+    /// method the compiler adds to the enclosing class for it is not reported a second time.
+    /// </summary>
+    [Fact]
+    public Task A_method_in_an_extension_block_fires_once() =>
+        Run("""
+            using System.Threading;
+            using System.Threading.Tasks;
+
+            public static class ClientExtensions
+            {
+                extension(object client)
+                {
+                    public Task GoAsync(CancellationToken {|BNCQ1001:token|} = default) => Task.CompletedTask;
+                }
+            }
+            """, preview: true);
 
     /// <summary>
     /// The policy is opt-in: the most conventional style there is must not light up on install.
