@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build CodeQuality.slnx -c Release --nologo -warnaserror
+
+      # PackagingTests runs here: it reads the project files and the two package lists, so it
+      # catches an unclassified packable project on the push that adds it rather than at release
+      # time, when a mistake is already permanent.
+      - name: Test
+        run: dotnet test --solution CodeQuality.slnx --no-build -c Release
+
+  # ⭐ Packing on every push, not only at release. The release workflow's pack step is the first
+  # time packing runs there, so a packaging mistake would surface with a tag already pushed and
+  # the version already spent. Here it is free.
+  pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Pack
+        run: dotnet pack CodeQuality.slnx -c Release --nologo --output ./packages/Release
+
+      # The same guard the release runs, against the same artifacts, at no cost.
+      - name: Assert packed matches declared
+        run: dotnet run scripts/assert-packages.cs -- ./packages/Release
+
+  # The family conventions: documentation at the root and in every top-level directory, the
+  # description, topics, feature toggles and rulesets. See docs/repository-conventions.md in
+  # Bennewitz.Ninja.Templates.
+  #
+  # ⭐ Red on a freshly generated repository, listing every gap, until each one is closed. That is
+  # the point: the first two repositories generated from this template went live without a
+  # description, and nothing said so.
+  #
+  # ⚠ The job name is a required check in .github/repository.json. Renaming it means changing that
+  # list and running `repo-conventions apply` in the same change, or every pull request blocks.
+  conventions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Check the repository conventions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: dotnet run --file scripts/repo-conventions.cs -- check
