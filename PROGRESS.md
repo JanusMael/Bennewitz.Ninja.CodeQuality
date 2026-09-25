@@ -54,10 +54,12 @@ a test that failed first.
 
 ## Next
 
-1. **Trusted publishing**, the maintainer's to set up because it is account-level: the `NUGET_USER`
-   repository variable and the one nuget.org policy, then **Release**, *Run workflow*, with the
-   version blank, which proves the credentials without publishing.
-   [docs/publishing.md](docs/publishing.md) is the runbook.
+1. **Trusted publishing.** `NUGET_USER` is set to `JanusMael`, the value every family repository
+   publishes with. The one nuget.org policy is the maintainer's, because it is account-level:
+   repository owner `JanusMael`, repository `Bennewitz.Ninja.CodeQuality`, workflow file
+   `release.yml`, environment blank, both publish scopes, and the glob `Bennewitz.Ninja.CodeQuality`.
+   Then **Release**, *Run workflow*, with the version blank, which proves the credentials without
+   publishing. [docs/publishing.md](docs/publishing.md) is the runbook.
 2. **The first release**, only on the maintainer's explicit go. In the same change as the tag, move
    the three rules from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md` under
    `## Release <version>`. Verify against the feed, not the workflow.
