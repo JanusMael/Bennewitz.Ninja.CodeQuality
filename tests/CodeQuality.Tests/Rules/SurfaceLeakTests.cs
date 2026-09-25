@@ -135,6 +135,40 @@ public sealed class SurfaceLeakTests
     }
 
     /// <summary>
+    /// A covered namespace declared only in a reference behind an extern alias is still in reach:
+    /// the alias hides it from the merged global namespace, not from a signature that names it as
+    /// <c>V::Vendor.Internal.Model</c>. Found as the twin of <c>BNCQ1004</c>'s alias defect.
+    /// </summary>
+    [Fact]
+    public async Task A_covered_namespace_behind_an_extern_alias_fires()
+    {
+        Images.Image vendor = await Images.Compile("Vendor", """
+            namespace Vendor.Internal
+            {
+                public class Model { }
+            }
+            """);
+
+        RuleTest<SurfaceLeakAnalyzer> test = new("""
+            extern alias V;
+
+            public class Client
+            {
+                public V::Vendor.Internal.Model {|BNCQ1002:Fetch|}() => null;
+            }
+            """);
+        test.TestState.AdditionalReferences.Add(vendor.Reference.WithAliases(["V"]));
+        test.TestState.AnalyzerConfigFiles.Add(("/.editorconfig", """
+            root = true
+
+            [*.cs]
+            bennewitz_ninja_codequality.BNCQ1002.namespaces = Vendor.Internal
+            """));
+
+        await test.Run();
+    }
+
+    /// <summary>
     /// A signature that names a covered type directly is reported for that, not for a longer path
     /// through another of its types, whichever comes first in the signature.
     /// </summary>

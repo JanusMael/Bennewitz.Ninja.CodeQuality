@@ -356,23 +356,32 @@ internal sealed class SurfaceLeakAnalyzer : ScopedAnalyzer<SurfaceLeakAnalyzer.S
         /// </summary>
         public static Scope? Of(Compilation compilation, ImmutableArray<string> namespaces, CancellationToken cancellationToken)
         {
-            // ⚠ Every prefix is resolved, never short-circuited: each assembly declaring a covered
-            // namespace has to be known, because that set seeds which referenced types are worth
-            // opening.
+            // ⚠ Every prefix is resolved in every assembly, never short-circuited: each assembly
+            // declaring a covered namespace has to be known, because that set seeds which referenced
+            // types are worth opening.
+            //
+            // ⛔ Each assembly's OWN global namespace, not the compilation's merged one. A reference
+            // behind an extern alias is left out of the merge, yet a signature can still name its
+            // types as Alias::Namespace.Type. Found as the twin of BNCQ1004's alias defect: the
+            // merged namespace left this rule inert for a covered package referenced that way.
+            List<IAssemblySymbol> assemblies = [compilation.Assembly];
+            foreach (MetadataReference reference in compilation.References)
+            {
+                if (compilation.GetAssemblyOrModuleSymbol(reference) is IAssemblySymbol assembly)
+                {
+                    assemblies.Add(assembly);
+                }
+            }
+
             HashSet<string> declaring = new(StringComparer.OrdinalIgnoreCase);
 
             foreach (string prefix in namespaces)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (Resolve(compilation.GlobalNamespace, prefix) is not { } covered)
+                foreach (IAssemblySymbol assembly in assemblies)
                 {
-                    continue;
-                }
-
-                foreach (INamespaceSymbol constituent in covered.ConstituentNamespaces)
-                {
-                    if (constituent.ContainingAssembly is { } assembly)
+                    if (Resolve(assembly.GlobalNamespace, prefix) is not null)
                     {
                         declaring.Add(assembly.Name);
                     }
