@@ -17,7 +17,7 @@ settings applied: `check --admin` conforms, and CI is green on every job of `1b6
 | `BNCQ1004`: a namespace segment that shadows a referenced root namespace | `af80b7b` |
 | `BNCQ1001`: a defaulted cancellation token, or a token-less overload of a tokened sibling, on a visible method or constructor; off by default | `af80b7b` |
 | `BNCQ1002`: a leak-prone type in the visible surface, walked transitively through referenced types | `af80b7b` |
-| `BNCQ1002` also sees a covered namespace declared only in a reference behind an extern alias; before, the rule stayed inert there. The twin of the alias defect fixed in `BNCQ1004` | |
+| `BNCQ1002` also sees a covered namespace declared only in a reference behind an extern alias; before, the rule stayed inert there. The twin of the alias defect fixed in `BNCQ1004` | `c8ce144` |
 
 ## Decisions
 
