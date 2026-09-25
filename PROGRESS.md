@@ -27,7 +27,7 @@ What `2026.3.925` holds:
 
 | Change | Commit |
 |---|---|
-| README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | |
+| README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | `95ae6ee` |
 
 ## Decisions
 
