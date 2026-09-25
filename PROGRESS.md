@@ -28,7 +28,7 @@ What `2026.3.925` holds:
 | Change | Commit |
 |---|---|
 | README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | `95ae6ee` |
-| `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | |
+| `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | `f938ff3` |
 
 ## Decisions
 
