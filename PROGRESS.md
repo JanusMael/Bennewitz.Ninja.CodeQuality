@@ -5,8 +5,10 @@ changing moves out rather than piling up.
 
 ## Published
 
-Nothing on nuget.org yet. The GitHub repository has been public since 2026-09-25, with the family
-settings applied: `check --admin` conforms, and CI is green on every job of `1b6af59`.
+Nothing on nuget.org yet: `2026.3.925` is being released, see Next. The GitHub repository has been
+public since 2026-09-25, with the family settings applied: `check --admin` conforms, and CI is
+green on every job of `1b6af59`. Trusted publishing is proven: on 2026-09-25 the credential
+preflight, run `36193373361`, logged in through the policy and stopped.
 
 ## On `main`, not yet released
 
@@ -54,19 +56,16 @@ a test that failed first.
 
 ## Next
 
-1. **Trusted publishing.** `NUGET_USER` is set to `JanusMael`, the value every family repository
-   publishes with. The one nuget.org policy is the maintainer's, because it is account-level:
-   repository owner `JanusMael`, repository `Bennewitz.Ninja.CodeQuality`, workflow file
-   `release.yml`, environment blank, both publish scopes, and the glob `Bennewitz.Ninja.CodeQuality`.
-   Then **Release**, *Run workflow*, with the version blank, which proves the credentials without
-   publishing. [docs/publishing.md](docs/publishing.md) is the runbook.
-2. **The first release**, only on the maintainer's explicit go. In the same change as the tag, move
-   the three rules from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md` under
-   `## Release <version>`. Verify against the feed, not the workflow.
-3. After the release, **AssemblyQuality links back**: its README's `BNAQ1001`, `BNAQ1002` and
+1. **The first release, `2026.3.925`**, at the maintainer's go on 2026-09-25. The change that
+   records this moves the three rules into `AnalyzerReleases.Shipped.md` under
+   `## Release 2026.3.925`, and `v2026.3.925` is tagged on it. Verify against the feed, not the
+   workflow, then move the table above under Published. `NUGET_USER` is `JanusMael`, and the policy
+   covers `Bennewitz.Ninja.CodeQuality` through `release.yml`:
+   [docs/publishing.md](docs/publishing.md).
+2. After the release, **AssemblyQuality links back**: its README's `BNAQ1001`, `BNAQ1002` and
    `BNAQ1004` gain links to this README's sections. A message to the AssemblyQuality session, or an
    issue in `JanusMael/Bennewitz.Ninja.AssemblyQuality` when none is running.
-4. After the release, **upstream the analyzer shape** to Bennewitz.Ninja.Templates as a third
+3. After the release, **upstream the analyzer shape** to Bennewitz.Ninja.Templates as a third
    template: the diff from the scaffold commit to the release tag is the measured difference from
    `bbpkg`. A message to the Templates session, or an issue in `JanusMael/Bennewitz.Ninja.Templates`.
    What it holds, for that message:
@@ -87,6 +86,6 @@ a test that failed first.
    - A defect in `bbpkg` itself, whatever the third template becomes: its `src/Directory.Build.props`
      says `PackageMetadataTests` reads the trimmable mark, and no such test exists; the template's
      test is `TrimmableTests`.
-5. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
+4. **C# 14 extension blocks**, once the Roslyn pin reaches 5.x: `BNCQ1002` does not read the
    receiver of an `extension(...)` block, because Roslyn 4.14 has no API for it. The README and the
    analyzer's remarks say so.
