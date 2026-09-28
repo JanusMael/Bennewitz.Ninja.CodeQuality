@@ -7,9 +7,18 @@ changing moves out rather than piling up.
 
 | Version | Released | Verified from the feed |
 |---|---|---|
+| `2026.3.928` | 2026-09-28: tag `v2026.3.928` on `facc5ef`, release run `36485941994`, after a credential preflight (run `36485485053`) and green CI on that commit (run `36485726552`) | The flat container lists it. The DLL nuget.org serves is byte-identical to the GitHub release asset's. A consumer restoring from nuget.org alone, on SDK `10.0.401`, gets `BNCQ1001`, `BNCQ1004`, and `BNCQ1002` twice, once at a C# 14 extension block whose receiver is `JsonNode`; no `AD0001`. The packed README links each counterpart's own AssemblyQuality section. Each rule's help link resolves to its README section on GitHub |
 | `2026.3.925` | 2026-09-25: tag `v2026.3.925` on `bed0f7c`, release run `36193678454`, after a credential preflight and green CI on that commit | The flat container lists it. The DLL nuget.org serves is byte-identical to the GitHub release asset's. A consumer restoring from nuget.org alone, on SDK `10.0.401`, gets `BNCQ1001`, `BNCQ1002` and `BNCQ1004`. Each rule's help link resolves to its README section on GitHub |
 
 The repository is public, with the family settings applied: `check --admin` conforms.
+
+What `2026.3.928` holds:
+
+| Change | Commit |
+|---|---|
+| README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`, on nuget.org as well as on GitHub | `95ae6ee` |
+| `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | `f938ff3` |
+| `PackagingTests` fails closed: a project under `src/` counts as packable unless its last `IsPackable` says `false`, because the SDK packs a class library by default; before, only an explicit `true` counted. `NuGet.config` says when a nested config loses the `*` mapping. Both from Bennewitz.Ninja.Templates pull request #11, `74feb10`, which fixed every template. Measured: an unclassified library planted under `src/` passed all six packaging tests before the change and fails `Every_packable_project_is_classified` after it, by name; declared `IsPackable` false, it passes. Nothing in the package changes | `8138e28` |
 
 What `2026.3.925` holds:
 
@@ -25,11 +34,7 @@ What `2026.3.925` holds:
 
 ## On `main`, not yet released
 
-| Change | Commit |
-|---|---|
-| README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | `95ae6ee` |
-| `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | `f938ff3` |
-| `PackagingTests` fails closed: a project under `src/` counts as packable unless its last `IsPackable` says `false`, because the SDK packs a class library by default; before, only an explicit `true` counted. `NuGet.config` says when a nested config loses the `*` mapping. Both from Bennewitz.Ninja.Templates pull request #11, `74feb10`, which fixed every template. Measured: an unclassified library planted under `src/` passed all six packaging tests before the change and fails `Every_packable_project_is_classified` after it, by name; declared `IsPackable` false, it passes. Nothing in the package changes | |
+Nothing since `2026.3.928`.
 
 ## Decisions
 
@@ -82,7 +87,6 @@ nothing, so it can no longer empty the developer's registration; and `bbpkg`'s
 
 ## Next
 
-1. **The next release**, `2026.3.926` at the earliest, carrying the table above. The maintainer
-   approved shipping it on 2026-09-25; only the version rule holds it, since one version per day
-   and `2026.3.925` is taken. The same steps as the first: move nothing in the release-tracking
-   files, because no rule is new; CI green on the commit; tag; verify from the feed.
+1. **Nothing is planned.** Before the next release, look at what Bennewitz.Ninja.Templates has
+   changed in `bbpkg` since `74feb10`, the last change ported here, and port what applies: this
+   repository was generated from `bbpkg`, so a fix there is usually a fix here.
