@@ -29,6 +29,7 @@ What `2026.3.925` holds:
 |---|---|
 | README: each counterpart link points at its own section in AssemblyQuality's README, `#bnaq1001`, `#bnaq1002`, `#bnaq1003` and `#bnaq1004`, instead of `#rules`. Documentation only: the nuget.org README keeps `#rules` until the next release | `95ae6ee` |
 | `BNCQ1002` reads the receiver of a C# 14 `extension(...)` block and reports a covered one at the block. Measured: the shipped 4.14 build does this inside the .NET 10 compiler, on released C# 14, with `BNCQ1001` firing once in the block and nothing reported twice. The rules now need Roslyn 4.14, the pin. The README, the analyzer's remarks and this file had said 4.14 had no API for it, which was never checked | `f938ff3` |
+| `PackagingTests` fails closed: a project under `src/` counts as packable unless its last `IsPackable` says `false`, because the SDK packs a class library by default; before, only an explicit `true` counted. `NuGet.config` says when a nested config loses the `*` mapping. Both from Bennewitz.Ninja.Templates pull request #11, `74feb10`, which fixed every template. Measured: an unclassified library planted under `src/` passed all six packaging tests before the change and fails `Every_packable_project_is_classified` after it, by name; declared `IsPackable` false, it passes. Nothing in the package changes | |
 
 ## Decisions
 
