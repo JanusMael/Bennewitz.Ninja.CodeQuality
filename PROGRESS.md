@@ -68,13 +68,17 @@ a test that failed first.
 ## Waiting on others
 
 Sent on 2026-09-25, at the maintainer's word, to the session that owns the repository. The change
-is theirs to make; nothing here waits on it. The AssemblyQuality link-back, sent the same way, is
-done: its `2c40de6` gives each rule a README section that links its counterpart, and a test there
-fails if a rule loses its heading.
+is theirs to make; nothing here waits on it.
 
 | Sent to | What |
 |---|---|
-| The Templates session | The measured differences from `bbpkg` for a third template: the diff `e457b5d..v2026.3.925`, with what each change is for. Also: `bbpkg`'s `src/Directory.Build.props` names a `PackageMetadataTests` that does not exist; and `verify-release` uninstalls the developer's `Bennewitz.Ninja.Templates` registration. Acknowledged the same day: that session's own scripts had wiped the registration on this machine; `verify-release` moves to a custom hive and the comment is fixed under its `plans/00005` step 5, pull request #8; the analyzer template is a candidate for a later plan |
+| The Templates session | The measured differences from `bbpkg` for a third template: the diff `e457b5d..v2026.3.925`, with what each change is for. Acknowledged the same day; the analyzer template is a candidate for a later plan there |
+
+Done, sent the same way. AssemblyQuality's `2c40de6` gives each rule a README section that links
+its counterpart, and a test there fails if a rule loses its heading. Templates pull request #9,
+`plans/00005` step 5, has `verify-release` install into a template hive of its own and uninstall
+nothing, so it can no longer empty the developer's registration; and `bbpkg`'s
+`src/Directory.Build.props` now cites `TrimmableTests`, the test that exists.
 
 ## Next
 
