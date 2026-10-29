@@ -1,5 +1,13 @@
 # Bennewitz.Ninja.CodeQuality
 
+> **This repository has moved, and is archived.** Bennewitz.Ninja.CodeQuality is developed in
+> [Bennewitz.Ninja.Inspections](https://github.com/JanusMael/Bennewitz.Ninja.Inspections) since
+> 2026-10-26, beside XamlQuality and AssemblyQuality, with this repository's whole history. Its
+> README is [docs/codequality.md](https://github.com/JanusMael/Bennewitz.Ninja.Inspections/blob/main/docs/codequality.md)
+> there. The package id is unchanged; its releases are tagged `codequality/vYYYY.Q.MMDD` there.
+> Issues and pull requests go there. This README is kept as it was below, since the help links of
+> released versions point at its rule sections.
+
 Roslyn analyzers for the shape of a .NET library's source: a namespace segment that shadows a
 referenced root namespace, an implementation type leaking into the public surface, and a
 cancellation token a caller can leave out. Each rule is the compile-time counterpart of a
